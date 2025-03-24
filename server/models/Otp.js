@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const mailSender = require('../utils/mailSender');
+const crypto = require('crypto');
+const bcrypt = require('bcrypt'); // Now we're using bcrypt for hashing
 
 const otpSchema = new mongoose.Schema({
   email: {
@@ -13,9 +15,19 @@ const otpSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 5 * 60, // TTL index (5 minutes)
+    expires: 5 * 60, // TTL index: 5 minutes
   },
 });
+
+// Function to generate a secure 6-digit OTP using crypto
+function generateOtp(length = 6) {
+  const digits = '0123456789';
+  let otp = '';
+  for (let i = 0; i < length; i++) {
+    otp += digits[crypto.randomInt(0, digits.length)];
+  }
+  return otp;
+}
 
 // Function to send verification email
 async function sendVerificationEmail(email, otp) {
@@ -29,18 +41,26 @@ async function sendVerificationEmail(email, otp) {
     console.log('Email sent successfully: ', mailResponse.messageId);
   } catch (error) {
     console.error('Error occurred while sending email:', error);
-    throw error; // Propagate error so that saving can be aborted
+    throw error;
   }
 }
 
-// Pre-save hook to send OTP email; abort save if email sending fails
+// Pre-save hook: Generate OTP, hash it, send email, and abort save if email sending fails
 otpSchema.pre('save', async function (next) {
   try {
-    await sendVerificationEmail(this.email, this.otp);
+    // Generate OTP
+    const otp = generateOtp(6);
+
+    // Hash the OTP for secure storage
+    const hashedOtp = await bcrypt.hash(otp, 10);
+    this.otp = hashedOtp;
+
+    // Attempt to send the plain OTP via email
+    await sendVerificationEmail(this.email, otp);
     next();
   } catch (error) {
     console.error('OTP email failed, aborting OTP save.');
-    next(error); // Pass error to abort saving the OTP document
+    next(error); // Abort save operation if email fails
   }
 });
 
