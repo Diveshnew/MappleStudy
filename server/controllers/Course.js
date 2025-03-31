@@ -31,6 +31,9 @@ exports.createCourse = async (req, res) => {
     // Check for instructor using authenticated user ID
     const userId = req.user.id;
     const instructorDetails = await User.findById(userId);
+    console.log('Instructor Details: ', instructorDetails);
+    // Todo: verify that userId and instructorDetails._id are same or different?
+
     if (!instructorDetails) {
       return res.status(404).json({
         success: false,
@@ -85,6 +88,38 @@ exports.createCourse = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to create course',
+      error: error.message,
+    });
+  }
+};
+
+//-----------getAllCourses handler function--------------
+exports.showAllCourses = async (req, res) => {
+  try {
+    const allCourses = await Course.find(
+      {},
+      {
+        courseName: true,
+        price: true,
+        thumbnail: true,
+        instructor: true,
+        ratingAndReviews: true,
+        studentsEnrolled: true,
+      }
+    )
+      .populate('instructor')
+      .exec();
+
+    return res.status(200).json({
+      success: true,
+      message: 'All courses fetched successfully',
+      data: allCourses,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Cannot fetch course data',
       error: error.message,
     });
   }
