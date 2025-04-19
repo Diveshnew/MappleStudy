@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Course = require('../models/Course');
 const Category = require('../models/Category');
 const User = require('../models/User');
@@ -6,14 +7,25 @@ const { uploadImageToCloudinary } = require('../utils/imageUploader');
 // --------Create Course Handler Function------------
 exports.createCourse = async (req, res) => {
   try {
-    // Extract data from request body
-    const { courseName, courseDescription, whatYouWillLearn, price, category } =
-      req.body;
+    // 1. Extract data from request body, including the optional status field
+    let {
+      courseName,
+      courseDescription,
+      whatYouWillLearn,
+      price,
+      category,
+      status,
+    } = req.body;
 
-    // Get thumbnail image from files
+    // 2. Default status to 'Draft' if not provided by the client
+    if (!status) {
+      status = 'Draft';
+    }
+
+    // 3. Get the thumbnail image file from uploaded files
     const thumbnail = req.files.thumbnailImage;
 
-    // Validate required fields
+    // 4. Validate that all required fields are present
     if (
       !courseName ||
       !courseDescription ||
@@ -28,12 +40,17 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    // Check for instructor using authenticated user ID
+    // 5. Ensure the provided status value is one of the allowed enum values
+    if (!['Draft', 'Published'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid status value',
+      });
+    }
+
+    // 6. Retrieve instructor details using the authenticated user ID
     const userId = req.user.id;
     const instructorDetails = await User.findById(userId);
-    console.log('Instructor Details: ', instructorDetails);
-    // Todo: verify that userId and instructorDetails._id are same or different?
-
     if (!instructorDetails) {
       return res.status(404).json({
         success: false,
@@ -41,8 +58,15 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    // Check if the provided category exists
-    const categoryDetails = await Category.findById(category);
+    // 7. Resolve the category: allow lookup by ObjectId or by human-readable name
+    let categoryDetails;
+    if (mongoose.Types.ObjectId.isValid(category)) {
+      // 7a. If category value is a valid ObjectId, find by _id
+      categoryDetails = await Category.findById(category);
+    } else {
+      // 7b. Otherwise, assume the client passed the category's name
+      categoryDetails = await Category.findOne({ name: category });
+    }
     if (!categoryDetails) {
       return res.status(404).json({
         success: false,
@@ -50,13 +74,13 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    // Upload thumbnail image to Cloudinary
+    // 8. Upload the thumbnail image to Cloudinary and get its URL
     const thumbnailImage = await uploadImageToCloudinary(
       thumbnail,
       process.env.FOLDER_NAME
     );
 
-    // Create new course entry in the database
+    // 9. Create the new Course document with all validated and resolved data
     const newCourse = await Course.create({
       courseName,
       courseDescription,
@@ -65,19 +89,17 @@ exports.createCourse = async (req, res) => {
       price,
       category: categoryDetails._id,
       thumbnail: thumbnailImage.secure_url,
+      status,
     });
 
-    // Update instructor's course list
+    // 10. Update the instructor's record to include this new course in their list
     await User.findByIdAndUpdate(
       instructorDetails._id,
       { $push: { courses: newCourse._id } },
       { new: true }
     );
 
-    // (Optional) Update category schema if needed
-    // Todo
-
-    // Return response with 201 Created
+    // 11. Return a success response with the newly created course data
     return res.status(201).json({
       success: true,
       message: 'Course created successfully',
@@ -85,6 +107,7 @@ exports.createCourse = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    // 12. Handle any unexpected errors during the process
     return res.status(500).json({
       success: false,
       message: 'Failed to create course',
@@ -93,9 +116,10 @@ exports.createCourse = async (req, res) => {
   }
 };
 
-//-----------getAllCourses handler function--------------
+// --------Show All Courses Handler Function------------
 exports.showAllCourses = async (req, res) => {
   try {
+    // 1. Query all courses, selecting only key fields for listing
     const allCourses = await Course.find(
       {},
       {
@@ -105,12 +129,14 @@ exports.showAllCourses = async (req, res) => {
         instructor: true,
         ratingAndReviews: true,
         studentsEnrolled: true,
+        status: true, // Include status in listing
       }
     )
-      .populate('instructor')
-      .populate('category') // Ensure category is also populated
+      .populate('instructor') // Replace instructor ID with user details
+      .populate('category') // Replace category ID with category details
       .exec();
 
+    // 2. Return the list of courses
     return res.status(200).json({
       success: true,
       message: 'All courses fetched successfully',
@@ -118,6 +144,7 @@ exports.showAllCourses = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    // 3. Handle any errors fetching the courses
     return res.status(500).json({
       success: false,
       message: 'Cannot fetch course data',
@@ -126,44 +153,43 @@ exports.showAllCourses = async (req, res) => {
   }
 };
 
-//----------Get Course Details-------------------------
+// ----------Get Course Details Handler Function----------
 exports.getCourseDetails = async (req, res) => {
   try {
-    // get id
+    // 1. Extract the courseId from the request body
     const { courseId } = req.body;
-    // find course details
+
+    // 2. Find the course and populate nested references for detailed view
     const courseDetails = await Course.find({ _id: courseId })
       .populate({
         path: 'instructor',
-        populate: {
-          path: 'additionalDetails',
-        },
+        populate: { path: 'additionalDetails' },
       })
       .populate('category')
       .populate('ratingAndReviews')
       .populate({
         path: 'courseContent',
-        populate: {
-          path: 'subSection',
-        },
+        populate: { path: 'subSection' },
       })
       .exec();
 
-    // validation
+    // 3. If no course is found, return a 400 error
     if (!courseDetails) {
       return res.status(400).json({
         success: false,
-        message: `Could not find the course with ${courseId}`,
+        message: `Could not find the course with ID ${courseId}`,
       });
     }
-    // return response
+
+    // 4. Return the detailed course data
     return res.status(200).json({
       success: true,
-      message: 'Course Details fetched Successfully',
+      message: 'Course Details fetched successfully',
       data: courseDetails,
     });
   } catch (error) {
     console.log(error);
+    // 5. Handle unexpected errors
     return res.status(500).json({
       success: false,
       message: error.message,
