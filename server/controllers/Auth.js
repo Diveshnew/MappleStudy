@@ -11,8 +11,10 @@ exports.sendOtp = async (req, res) => {
     // Fetch email from request body
     const { email } = req.body;
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Check if user already exists
-    const checkUserPresent = await User.findOne({ email });
+    const checkUserPresent = await User.findOne({ email: normalizedEmail });
 
     // If user already exists, then return a response
     if (checkUserPresent) {
@@ -26,7 +28,7 @@ exports.sendOtp = async (req, res) => {
     // 1. Generate a secure OTP using crypto.
     // 2. Send the OTP via email.
     // If email sending fails, the OTP won't be saved.
-    const otpBody = await Otp.create({ email });
+    const otpBody = await Otp.create({ email: normalizedEmail });
     console.log(otpBody);
 
     // Return a successful response (note: OTP is not returned in production)
@@ -81,8 +83,10 @@ exports.signUp = async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -91,7 +95,7 @@ exports.signUp = async (req, res) => {
     }
 
     // Find the most recent OTP for the user
-    const recentOtp = await Otp.find({ email })
+    const recentOtp = await Otp.find({ email: normalizedEmail })
       .sort({ createdAt: -1 })
       .limit(1);
 
@@ -127,7 +131,7 @@ exports.signUp = async (req, res) => {
     const user = await User.create({
       firstName,
       lastName,
-      email,
+      email: normalizedEmail,
       contactNumber,
       password: hashedPassword,
       accountType,
@@ -162,8 +166,13 @@ exports.login = async (req, res) => {
         message: 'Please Fill up All the Required Fields',
       });
     }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
     // User check exist or not
-    const user = await User.findOne({ email }).populate('additionalDetails');
+    const user = await User.findOne({ email: normalizedEmail }).populate(
+      'additionalDetails'
+    );
     if (!user) {
       return res.status(401).json({
         success: false,
