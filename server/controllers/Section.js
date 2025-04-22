@@ -15,6 +15,15 @@ exports.createSection = async (req, res) => {
       });
     }
 
+    // Check if the course exists before adding section
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found',
+      });
+    }
+
     // Create section
     const newSection = await Section.create({ sectionName });
 
@@ -23,9 +32,14 @@ exports.createSection = async (req, res) => {
       courseId,
       { $push: { courseContent: newSection._id } },
       { new: true }
-    );
-
-    // TODO: Use populate to replace sections/sub-sections in updatedCourseDetails
+    )
+      .populate({
+        path: 'courseContent',
+        populate: {
+          path: 'subSections', // Populate sub-sections inside each section
+        },
+      })
+      .exec();
 
     // Return response with 201 Created for new resource
     return res.status(201).json({
@@ -56,12 +70,19 @@ exports.updateSection = async (req, res) => {
       });
     }
 
-    // Update section
-    const section = await Section.findByIdAndUpdate(
-      sectionId,
-      { sectionName },
-      { new: true }
-    );
+    // Check if section exists before updating
+    const section = await Section.findById(sectionId);
+    if (!section) {
+      return res.status(404).json({
+        success: false,
+        message: 'Section not found',
+      });
+    }
+
+    // Update section name
+    section.sectionName = sectionName;
+    await section.save();
+
     // Optionally, return the updated section object
     return res.status(200).json({
       success: true,
@@ -80,10 +101,41 @@ exports.updateSection = async (req, res) => {
 // --------Delete Section Handler Function------------
 exports.deleteSection = async (req, res) => {
   try {
-    // Get sectionId from URL parameters
-    const { sectionId } = req.params;
+    const { sectionId, courseId } = req.body;
 
-    // Delete section using findByIdAndDelete
+    // Check for required fields
+    if (!sectionId || !courseId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Section ID and Course ID are required',
+      });
+    }
+
+    // Check if section exists
+    const section = await Section.findById(sectionId);
+    if (!section) {
+      return res.status(404).json({
+        success: false,
+        message: 'Section not found',
+      });
+    }
+
+    // Remove section from the course
+    const updatedCourse = await Course.findByIdAndUpdate(
+      courseId,
+      { $pull: { courseContent: sectionId } },
+      { new: true }
+    );
+
+    // Double-check if course was found
+    if (!updatedCourse) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found',
+      });
+    }
+
+    // Delete the section
     await Section.findByIdAndDelete(sectionId);
 
     return res.status(200).json({
