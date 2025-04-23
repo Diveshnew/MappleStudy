@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import HighlightText from '../components/core/HomePage/HighlightText';
 
 const Home = () => {
   return (
@@ -16,6 +17,18 @@ const Home = () => {
             </div>
           </div>
         </Link>
+
+        {/* Heading */}
+        <div className="text-center text-4xl font-semibold mt-7">
+          Fuel Big Dreams With
+          <HighlightText text={'Coding Skills'} />
+        </div>
+
+        <div className="-mt-3 w-[90%] text-center text-lg font-bold text-[var(--color-richblack-300)] ">
+          Our online courses allow you to learn at your own pace, from anywhere,
+          and provide hands-on projects, quizzes, and personalized feedback to
+          guide you every step of the way.
+        </div>
       </div>
       {/* Section 2 */}
 
