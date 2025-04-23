@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import Banner from '../assets/Images/banner.mp4';
 import CTAButton from '../components/core/HomePage/Button';
 import HighlightText from '../components/core/HomePage/HighlightText';
 
@@ -39,6 +40,13 @@ const Home = () => {
           <CTAButton active={false} linkto={'/login'}>
             Book a Demo
           </CTAButton>
+        </div>
+
+        {/* Video */}
+        <div className="mx-3 my-7 overflow-hidden rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] border border-richblack-700">
+          <video className="w-full h-auto rounded-xl" muted loop autoPlay>
+            <source src={Banner} type="video/mp4" />
+          </video>
         </div>
       </div>
       {/* Section 2 */}
