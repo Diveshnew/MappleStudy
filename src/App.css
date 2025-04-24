@@ -1,4 +1,92 @@
+/* Reset horizontal overflow and set full height on root elements */
 html,
 body {
+  /* Prevent horizontal scroll */
   overflow-x: hidden;
+  /* Make body fill the full viewport height */
+  height: 100%;
+  /* Remove default margin */
+  margin: 0;
+  /* Use flex layout for stacking children vertically */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure React root also uses full flex layout */
+#root {
+  /* Grow to fill available space */
+  flex: 1;
+  /* Use flex column for nested app components */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Position icons vertically at 25% down from the top */
+.icon {
+  top: calc(25%);
+}
+
+/* Custom cursor for all elements */
+* {
+  cursor: url('/src/assets/Images/ads_click_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24 (2).svg'),
+    auto;
+}
+
+/* Background gradient & blur for the first code block */
+.codeblock1 {
+  /* Fixed size and circular shape */
+  width: 372.95px;
+  height: 257.05px;
+  border-radius: 100%;
+  /* Center with an offset */
+  left: calc(50% - 372.95px / 2 - 76.53px);
+  top: calc(50% - 257.05px / 2 - 47.47px);
+  /* Diagonal gradient with semi-transparent stops */
+  background: linear-gradient(
+    123.77deg,
+    #8a2be2 -6.46%,
+    #ffa500 59.04%,
+    #f8f8ff 124.53%
+  );
+  /* Subtle visibility and soft blur for glow effect */
+  opacity: 0.2;
+  filter: blur(34px);
+  /* Slight skew transform */
+  transform: matrix(1, 0, -0.03, 1, 0, 0);
+}
+
+/* Background gradient & blur for the second code block */
+.codeblock2 {
+  position: absolute;
+  /* Match size and shape of codeblock1 */
+  width: 372.95px;
+  height: 257.05px;
+  left: calc(50% - 372.95px / 2 - 76.53px);
+  top: calc(50% - 257.05px / 2 - 47.47px);
+  border-radius: 100%;
+  /* Different color gradient for variation */
+  background: linear-gradient(
+    118.19deg,
+    #1fa2ff -3.62%,
+    #12d8fa 50.44%,
+    #a6ffcb 104.51%
+  );
+  opacity: 0.2;
+  filter: blur(34px);
+  transform: matrix(1, 0, -0.03, 1, 0, 0);
+}
+
+/* Styled border and backdrop for code containers */
+.code-border {
+  /* Semi-transparent white gradient border */
+  border: 2px solid;
+  border-image-slice: 1;
+  border-width: 2px;
+  border-image-source: linear-gradient(to right bottom, #ffffff38, #ffffff00);
+  /* Dark semi-transparent background gradient */
+  background: linear-gradient(
+    111.93deg,
+    rgba(14, 26, 45, 0.24) -1.4%,
+    rgba(17, 30, 50, 0.38) 104.96%
+  );
 }
