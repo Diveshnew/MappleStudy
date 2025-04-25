@@ -129,6 +129,25 @@ const Home = () => {
             </div>
           </div>
         </div>
+
+        <div className="mx-auto flex w-11/12 max-w-maxContent flex-col items-center justify-between gap-8 ">
+          {/* Job that is in Demand - Section 1 */}
+          <div className="mb-10 mt-[-100px] flex flex-col justify-between gap-7 lg:mt-20 lg:flex-row lg:gap-0">
+            <div className="text-4xl font-semibold lg:w-[45%] ">
+              Get the skills you need for a{' '}
+              <HighlightText text={'job that is in demand.'} />
+            </div>
+            <div className="flex flex-col items-start gap-10 lg:w-[40%]">
+              <div className="text-[16px]">
+                MappleStudy sets its own path. Today, being the best means more
+                than just knowing your job.
+              </div>
+              <CTAButton active={true} linkto={'/signup'}>
+                <div className="">Learn More</div>
+              </CTAButton>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Section 3 */}
