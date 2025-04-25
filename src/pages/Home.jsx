@@ -3,8 +3,8 @@ import { FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Banner from '../assets/Images/banner.mp4';
 import CTAButton from '../components/core/HomePage/Button';
-import HighlightText from '../components/core/HomePage/HighlightText';
 import CodeBlocks from '../components/core/HomePage/CodeBlocks';
+import HighlightText from '../components/core/HomePage/HighlightText';
 
 const Home = () => {
   return (
@@ -109,7 +109,27 @@ const Home = () => {
           />
         </div>
       </div>
+
       {/* Section 2 */}
+      <div className="bg-[var(--color-pure-greys-5)] text-[var(--color-richblack-700)]">
+        <div className="homepage_bg h-[320px]">
+          {/* Explore Full Catagory Section */}
+          <div className="mx-auto flex w-11/12 max-w-maxContent flex-col items-center justify-between gap-8">
+            <div className="lg:h-[150px]"></div>
+            <div className="flex flex-row gap-7 text-white lg:mt-8">
+              <CTAButton active={true} linkto={'/signup'}>
+                <div className="flex items-center gap-2">
+                  Explore Full Catalog
+                  <FaArrowRight />
+                </div>
+              </CTAButton>
+              <CTAButton active={false} linkto={'/login'}>
+                Learn More
+              </CTAButton>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Section 3 */}
 
