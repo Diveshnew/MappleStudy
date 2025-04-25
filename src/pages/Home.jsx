@@ -5,6 +5,7 @@ import Banner from '../assets/Images/banner.mp4';
 import CTAButton from '../components/core/HomePage/Button';
 import CodeBlocks from '../components/core/HomePage/CodeBlocks';
 import HighlightText from '../components/core/HomePage/HighlightText';
+import TimelineSection from '../components/core/HomePage/TimelineSection';
 
 const Home = () => {
   return (
@@ -147,6 +148,9 @@ const Home = () => {
               </CTAButton>
             </div>
           </div>
+
+          {/* Timeline Section - Section 2 */}
+          <TimelineSection />
         </div>
       </div>
 
