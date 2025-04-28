@@ -5,8 +5,9 @@ import Banner from '../assets/Images/banner.mp4';
 import CTAButton from '../components/core/HomePage/Button';
 import CodeBlocks from '../components/core/HomePage/CodeBlocks';
 import HighlightText from '../components/core/HomePage/HighlightText';
-import TimelineSection from '../components/core/HomePage/TimelineSection';
+import InstructorSection from '../components/core/HomePage/InstructorSection';
 import LearningLanguageSection from '../components/core/HomePage/LearningLanguageSection';
+import TimelineSection from '../components/core/HomePage/TimelineSection';
 
 const Home = () => {
   return (
@@ -159,8 +160,10 @@ const Home = () => {
       </div>
 
       {/* Section 3 */}
-
-      {/* Footer */}
+      <div className="relative mx-auto my-20 flex max-w-maxContent flex-col items-center justify-between gap-8 bg-[var(--color-richblack-900)] text-white">
+        {/* Become a instructor section */}
+        <InstructorSection />
+      </div>
     </div>
   );
 };
