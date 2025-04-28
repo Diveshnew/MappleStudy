@@ -2,6 +2,7 @@ import React from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Banner from '../assets/Images/banner.mp4';
+import Footer from '../components/common/Footer';
 import CTAButton from '../components/core/HomePage/Button';
 import CodeBlocks from '../components/core/HomePage/CodeBlocks';
 import HighlightText from '../components/core/HomePage/HighlightText';
@@ -164,6 +165,9 @@ const Home = () => {
         {/* Become a instructor section */}
         <InstructorSection />
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
