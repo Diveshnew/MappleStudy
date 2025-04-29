@@ -9,6 +9,7 @@ import HighlightText from '../components/core/HomePage/HighlightText';
 import InstructorSection from '../components/core/HomePage/InstructorSection';
 import LearningLanguageSection from '../components/core/HomePage/LearningLanguageSection';
 import TimelineSection from '../components/core/HomePage/TimelineSection';
+import ExploreMore from '../components/core/HomePage/ExploreMore';
 
 const Home = () => {
   return (
@@ -112,6 +113,8 @@ const Home = () => {
             backgroundGradient={<div className="codeblock2 absolute"></div>}
           />
         </div>
+
+        <ExploreMore />
       </div>
 
       {/* Section 2 */}
