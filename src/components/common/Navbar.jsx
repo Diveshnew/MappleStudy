@@ -10,6 +10,7 @@ import { NavbarLinks } from '../../data/navbar-links';
 import { apiConnector } from '../../services/apiconnector';
 import { categories } from '../../services/apis';
 import { ACCOUNT_TYPE } from '../../utils/constants';
+import ProfileDropdown from '../core/Auth/ProfileDropDown';
 
 function Navbar() {
   // Access auth and profile data from Redux store
@@ -185,7 +186,10 @@ function Navbar() {
                     </button>
                   </Link>
                 </>
-              ) : null}
+              ) : (
+                // If logged in, show profile dropdown
+                <ProfileDropdown />
+              )}
             </div>
           </div>
         </div>
