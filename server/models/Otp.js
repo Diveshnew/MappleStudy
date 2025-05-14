@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const mailSender = require('../utils/mailSender');
+const otpTemplate = require('../mail/templates/emailVerificationTemplate');
 const crypto = require('crypto');
-const bcrypt = require('bcrypt'); // Now we're using bcrypt for hashing
+const bcrypt = require('bcrypt'); // Using bcrypt for hashing
 
 const otpSchema = new mongoose.Schema({
   email: {
@@ -10,7 +11,7 @@ const otpSchema = new mongoose.Schema({
   },
   otp: {
     type: String,
-    // required: true,
+    // hashed OTP
   },
   createdAt: {
     type: Date,
@@ -29,16 +30,15 @@ function generateOtp(length = 6) {
   return otp;
 }
 
-// Function to send verification email
+// Function to send verification email using the custom template
 async function sendVerificationEmail(email, otp) {
   try {
-    const mailResponse = await mailSender(
-      email,
-      'Verification Email from MappleStudy',
-      `<h1>Your OTP is: <strong>${otp}</strong></h1>
-       <p>This OTP is valid for 5 minutes.</p>`
-    );
-    console.log('Email sent successfully: ', mailResponse.messageId);
+    // Generate the email HTML using the template
+    const emailHtml = otpTemplate(otp);
+    const subject = 'Verification Email from MappleStudy';
+
+    const mailResponse = await mailSender(email, subject, emailHtml);
+    console.log('Email sent successfully:', mailResponse.messageId);
   } catch (error) {
     console.error('Error occurred while sending email:', error);
     throw error;
@@ -55,7 +55,7 @@ otpSchema.pre('save', async function (next) {
     const hashedOtp = await bcrypt.hash(otp, 10);
     this.otp = hashedOtp;
 
-    // Attempt to send the plain OTP via email
+    // Attempt to send the plain OTP via email using custom template
     await sendVerificationEmail(this.email, otp);
     next();
   } catch (error) {
