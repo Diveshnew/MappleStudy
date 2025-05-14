@@ -1,13 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import Home from './pages/Home';
-import Signup from './pages/Signup';
-import Login from './pages/Login';
 import Navbar from './components/common/Navbar';
 import OpenRoute from './components/core/Auth/OpenRoute';
 import Error from './pages/Error';
 import ForgotPassword from './pages/ForgotPassword';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import UpdatePassword from './pages/UpdatePassword';
+import VerifyEmail from './pages/VerifyEmail';
 
 function App() {
   return (
@@ -44,6 +45,14 @@ function App() {
           element={
             <OpenRoute>
               <UpdatePassword />
+            </OpenRoute>
+          }
+        />
+        <Route
+          path="verify-email"
+          element={
+            <OpenRoute>
+              <VerifyEmail />
             </OpenRoute>
           }
         />
