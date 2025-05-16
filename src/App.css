@@ -1,3 +1,8 @@
+/* ----------------------------------------------
+   Import Tailwind CSS v4 framework
+   ---------------------------------------------- */
+@import 'tailwindcss';
+
 /* Reset horizontal overflow and set full height on root elements */
 html,
 body {
@@ -87,4 +92,14 @@ body {
 
 .homepage_bg {
   background: url('../src/assets/Images/bghome.svg');
+}
+
+@layer components {
+  .form-style {
+    @apply rounded-lg bg-[var(--color-richblack-700)] p-3 text-[16px] leading-[24px] text-[var(--color-richblack-5)] shadow-[0_1px_0_0] shadow-white/50 placeholder:text-[var(--color-richblack-400)] focus:outline-none;
+  }
+
+  .lable-style {
+    @apply text-[14px] text-[var(--color-richblack-5)];
+  }
 }
