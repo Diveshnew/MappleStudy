@@ -16,6 +16,7 @@ import VerifyEmail from './pages/VerifyEmail';
 
 import MyProfile from './components/core/Dashboard/MyProfile';
 import Dashboard from './pages/Dashboard';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         {/** 1) Public pages (no guard) */}
         <Route path="/" element={<Home />} />
         <Route path="about" element={<About />} />
+        <Route path="contact" element={<Contact />} />
 
         {/** 2) Unauthenticated-only pages */}
         <Route
