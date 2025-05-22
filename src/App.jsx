@@ -15,6 +15,7 @@ import Signup from './pages/Signup';
 import UpdatePassword from './pages/UpdatePassword';
 import VerifyEmail from './pages/VerifyEmail';
 
+import Cart from './components/core/Dashboard/Cart';
 import EnrolledCourses from './components/core/Dashboard/EnrolledCourses';
 import MyProfile from './components/core/Dashboard/MyProfile';
 import Settings from './components/core/Dashboard/Settings';
@@ -88,6 +89,7 @@ function App() {
           <Route path="dashboard/settings" element={<Settings />} />
           {user?.accountType === ACCOUNT_TYPE.STUDENT && (
             <>
+              <Route path="dashboard/cart" element={<Cart />} />
               <Route
                 path="dashboard/enrolled-courses"
                 element={<EnrolledCourses />}
