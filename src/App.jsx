@@ -15,8 +15,9 @@ import UpdatePassword from './pages/UpdatePassword';
 import VerifyEmail from './pages/VerifyEmail';
 
 import MyProfile from './components/core/Dashboard/MyProfile';
-import Dashboard from './pages/Dashboard';
+import Settings from './components/core/Dashboard/Settings';
 import Contact from './pages/Contact';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -79,14 +80,8 @@ function App() {
             </PrivateRoute>
           }
         >
-          <Route
-            path="dashboard/my-profile"
-            element={
-              <PrivateRoute>
-                <MyProfile />
-              </PrivateRoute>
-            }
-          />
+          <Route path="dashboard/my-profile" element={<MyProfile />} />
+          <Route path="dashboard/settings" element={<Settings />} />
         </Route>
 
         {/** 4) Catch-all error page */}
