@@ -3,6 +3,9 @@ const Otp = require('../models/Otp');
 const Profile = require('../models/Profile');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const mailSender = require('../utils/mailSender');
+const { passwordUpdated } = require('../mail/templates/passwordUpdate');
+
 require('dotenv').config();
 
 // ---------------Send OTP----------------------
@@ -214,6 +217,70 @@ exports.login = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Login failure Please try again',
+    });
+  }
+};
+
+// -------------Changing Password----------------
+exports.changePassword = async (req, res) => {
+  try {
+    // 1. Fetch user
+    const userDetails = await User.findById(req.user.id);
+    if (!userDetails) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'User not found' });
+    }
+
+    // 2. Pull old/new passwords
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Both old and new passwords are required',
+      });
+    }
+
+    // 3. Verify old password
+    const isMatch = await bcrypt.compare(oldPassword, userDetails.password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'Current password is incorrect' });
+    }
+
+    // 4. Hash & save new password
+    const encryptedPassword = await bcrypt.hash(newPassword, 10);
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { password: encryptedPassword },
+      { new: true }
+    );
+
+    // 5. Send success response immediately
+    res
+      .status(200)
+      .json({ success: true, message: 'Password updated successfully' });
+
+    // 6. Send email in background
+    try {
+      await mailSender(
+        updatedUser.email,
+        'Your password has changed',
+        passwordUpdated(
+          updatedUser.email,
+          `Hello ${updatedUser.firstName}, your password was updated successfully.`
+        )
+      );
+    } catch (err) {
+      console.error('Failed to send password-update email:', err);
+    }
+  } catch (error) {
+    console.error('Error in changePassword:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error occurred while updating password',
+      error: error.message,
     });
   }
 };
