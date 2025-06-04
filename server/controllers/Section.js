@@ -37,6 +37,7 @@ exports.createSection = async (req, res) => {
         path: 'courseContent',
         populate: {
           path: 'subSections', // Populate sub-sections inside each section
+          model: 'SubSection',
         },
       })
       .exec();
