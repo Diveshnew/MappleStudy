@@ -20,7 +20,7 @@ export default function ConfirmationModal({ modalData }) {
         <div className="flex flex-col gap-y-4 md:flex-row md:gap-x-4">
           {/* First button using IconBtn: customizable text and click handler */}
           <IconBtn
-            onclick={modalData?.btn1Handler}
+            onClick={modalData?.btn1Handler}
             text={modalData?.btn1Text}
           />
           {/* Second button: plain styled button with handler */}
