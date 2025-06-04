@@ -153,7 +153,6 @@ exports.getEnrolledCourses = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Fetch user with enrolled courses and nested content
     const user = await User.findById(userId)
       .select('courses')
       .populate({
@@ -161,8 +160,8 @@ exports.getEnrolledCourses = async (req, res) => {
         select: 'courseName courseContent price',
         populate: {
           path: 'courseContent',
-          select: 'subSection',
-          populate: { path: 'subSection', select: 'timeDuration' },
+          select: 'subSections',
+          populate: { path: 'subSections', select: 'timeDuration' },
         },
       })
       .lean();
@@ -173,31 +172,31 @@ exports.getEnrolledCourses = async (req, res) => {
         .json({ success: false, message: 'No enrolled courses found.' });
     }
 
-    // Batch fetch progress
     const courseIds = user.courses.map((c) => c._id);
     const progresses = await CourseProgress.find({
-      courseID: { $in: courseIds },
+      courseId: { $in: courseIds },
       userId,
     })
-      .select('courseID completedVideos')
+      .select('courseId completedVideos')
       .lean();
     const progressMap = progresses.reduce((map, doc) => {
-      map[doc.courseID] = doc.completedVideos.length;
+      map[doc.courseId] = doc.completedVideos.length;
       return map;
     }, {});
 
     const result = user.courses.map((course) => {
+      // Use subSections (plural), since that's your schema
       const totalSeconds = course.courseContent.reduce(
         (sum, content) =>
           sum +
-          content.subSection.reduce(
+          content.subSections.reduce(
             (s, sub) => s + parseInt(sub.timeDuration || 0, 10),
             0
           ),
         0
       );
       const totalSections = course.courseContent.reduce(
-        (count, content) => count + content.subSection.length,
+        (count, content) => count + content.subSections.length,
         0
       );
       const completed = progressMap[course._id] || 0;
