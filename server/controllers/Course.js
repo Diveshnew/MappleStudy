@@ -96,6 +96,12 @@ exports.createCourse = async (req, res) => {
       status,
     });
 
+    await Category.findByIdAndUpdate(
+      categoryDetails._id,
+      { $push: { courses: newCourse._id } },
+      { new: true }
+    );
+
     // 10. Update the instructor's record to include this new course in their list
     await User.findByIdAndUpdate(
       instructorDetails._id,
