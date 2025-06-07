@@ -111,4 +111,8 @@ body {
   .lable-style {
     @apply text-[14px] text-[var(--color-richblack-5)];
   }
+
+  .section_heading {
+    @apply text-2xl font-bold text-[var(--color-richblack-5)] lg:text-4xl;
+  }
 }
