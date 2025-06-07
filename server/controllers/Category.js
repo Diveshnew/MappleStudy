@@ -60,10 +60,17 @@ exports.categoryPageDetails = async (req, res) => {
 
     // Get courses for the specified category
     const selectedCategory = await Category.findById(categoryId)
-      .populate('courses')
+      .populate({
+        path: 'courses',
+        populate: {
+          path: 'instructor',
+          select: 'firstName lastName', // only these two fields
+        },
+      })
       .exec();
 
-    console.log(selectedCategory);
+    // Debug log to inspect the full selected category object
+    console.log('Selected Category Full Data:', selectedCategory);
 
     // Handle the case when the category is not found
     if (!selectedCategory) {
@@ -74,37 +81,47 @@ exports.categoryPageDetails = async (req, res) => {
     }
 
     // Handle the case when there are no courses
-    if (selectedCategory.courses.length === 0) {
+    if (!selectedCategory.courses || selectedCategory.courses.length === 0) {
       console.log('No courses found for the selected category.');
       return res.status(404).json({
         success: false,
         message: 'NO courses found for the selected category',
       });
     }
+
     const selectedCourses = selectedCategory.courses;
 
     // Get courses for other categories
     const categoriesExceptSelected = await Category.find({
       _id: { $ne: categoryId },
-    }).populate('courses');
+    }).populate({
+      path: 'courses',
+      populate: { path: 'instructor', select: 'firstName lastName' },
+    });
+
     let differentCourses = [];
     for (const category of categoriesExceptSelected) {
       differentCourses.push(...category.courses);
     }
 
     // Get top-selling courses across all categories
-    const allCategories = await Category.find().populate('courses');
+    const allCategories = await Category.find().populate({
+      path: 'courses',
+      populate: { path: 'instructor', select: 'firstName lastName' },
+    });
     const allCourses = allCategories.flatMap((category) => category.courses);
     const mostSellingCourses = allCourses
       .sort((a, b) => b.sold - a.sold)
       .slice(0, 10);
 
     res.status(200).json({
+      success: true,
       selectedCourses: selectedCourses,
       differentCourses: differentCourses,
       mostSellingCourses: mostSellingCourses,
     });
   } catch (error) {
+    console.error('Error in categoryPageDetails:', error); //better logging
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
