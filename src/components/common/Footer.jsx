@@ -34,7 +34,7 @@ const Footer = () => {
   return (
     <div className="bg-[var(--color-richblack-800)]">
       {/* Main container for footer */}
-      <div className="flex flex-col lg:flex-row gap-8 items-center justify-between w-11/12 max-w-maxContent text-[var(--color-richblack-400)] leading-6 mx-auto py-14">
+      <div className="flex flex-col lg:flex-row gap-8 items-center justify-between w-full max-w-[var(--maxwidth-maxContent)] px-4 mx-auto py-14 text-[var(--color-richblack-400)] leading-6">
         {/* Top section with company info, resources, plans, community, and footer links */}
         <div className="w-full flex flex-col lg:flex-row pb-5 border-b border-[var(--color-richblack-700)]">
           {/* Left half - Company information and social media */}
@@ -183,7 +183,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom section - Privacy policy, Cookie policy, Terms, and Copyright */}
-      <div className="flex flex-col lg:flex-row items-center justify-between w-11/12 max-w-maxContent text-[var(--color-richblack-400)] mx-auto pb-14 text-sm">
+      <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-[var(--maxwidth-maxContent)] px-4 mx-auto pb-14 text-sm text-[var(--color-richblack-400)]">
         <div className="flex justify-between lg:items-start items-center flex-col lg:flex-row gap-3 w-full">
           {/* Policies links */}
           <div className="flex flex-row flex-wrap">
